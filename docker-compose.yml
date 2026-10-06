@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: filmbox
+      FILMBOX_WEB_PASSWORD: ${FILMBOX_WEB_PASSWORD}
+    ports: ["5433:5432"]
+    volumes:
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro   # played once, on an empty volume
+      - ./db/seeds:/seeds:ro   # put filmbox-s3.sql here as volume.sql (optional)
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d filmbox"]
+      interval: 3s
+      retries: 20
+volumes:
+  pgdata:
